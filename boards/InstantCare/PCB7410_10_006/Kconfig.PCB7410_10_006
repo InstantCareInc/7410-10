@@ -1,0 +1,2 @@
+config BOARD_PCB7410_10_006
+	select SOC_NRF52832_QFAA

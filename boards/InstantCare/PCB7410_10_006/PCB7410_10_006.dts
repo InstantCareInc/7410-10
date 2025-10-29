@@ -1,0 +1,105 @@
+/dts-v1/;
+#include <nordic/nrf52832_qfaa.dtsi>
+#include "PCB7410_10_006-pinctrl.dtsi"
+
+/ {
+	model = "PCB7410-10-006";
+	compatible = "InstantCare,PCB7410-10-006";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		grn: grn {
+			gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
+			label = "GRN";
+		};
+
+		red: red {
+			gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
+			label = "RED";
+		};
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+		sw2 {
+			label = "SW2";
+			gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+		};
+	};
+
+	sounders {
+		compatible = "gpio-leds";
+		SN1: SN1 {
+			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+			label = "SN1";
+		};
+		SN2: SN2 {
+			gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
+			label = "SN2";
+		};
+		SN3: SN3 {
+			gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
+			label = "SN3";
+		};
+	};
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(48)>;
+		};
+
+		slot0_partition: partition@c000 {
+			label = "image-0";
+			reg = <0x0000c000 DT_SIZE_K(220)>;
+		};
+
+		slot1_partition: partition@43000 {
+			label = "image-1";
+			reg = <0x00043000 DT_SIZE_K(220)>;
+		};
+
+		storage_partition: partition@7a000 {
+			label = "storage";
+			reg = <0x0007a000 DT_SIZE_K(24)>;
+		};
+	};
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+	current-speed = <115200>;
+};
+
+&pinctrl {
+	uart0_default: uart0_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 26)>, <NRF_PSEL(UART_RX, 0, 27)>;
+		};
+	};
+
+	uart0_sleep: uart0_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 26)>;
+		};
+	};
+};

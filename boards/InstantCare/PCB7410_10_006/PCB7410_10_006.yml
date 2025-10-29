@@ -1,0 +1,10 @@
+identifier: PCB7410_10_006/nrf52832
+name: PCB7410-10-006
+vendor: InstantCare
+type: mcu
+arch: arm
+ram: 64
+flash: 512
+toolchain:
+  - zephyr
+supported: []

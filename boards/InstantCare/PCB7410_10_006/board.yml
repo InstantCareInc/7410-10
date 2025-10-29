@@ -1,0 +1,5 @@
+board:
+  name: PCB7410_10_006
+  vendor: InstantCare
+  socs:
+    - name: nrf52832
