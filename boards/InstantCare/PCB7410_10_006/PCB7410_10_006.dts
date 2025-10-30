@@ -101,7 +101,3 @@
 	status = "okay";
 };
 
-&nfct {
-	status = "disabled";
-};
-
