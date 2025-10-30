@@ -101,3 +101,31 @@
 	status = "okay";
 };
 
+&spi0 {
+	status = "okay";
+	pinctrl-0 = <&spi0_default>;
+	pinctrl-1 = <&spi0_sleep>;
+	pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>, <&gpio0 14 GPIO_ACTIVE_LOW>;
+	adxl367@0 {
+		compatible = "adi,adxl367";
+		reg = <0x0>;
+		spi-max-frequency = <8000000>;
+		int1-gpios = <&gpio0 12 0>;
+	};
+
+	// bmp585@1 {
+		//     compatible = "bosch,bmp585";
+		//     reg = <0x1>;
+		//     spi-max-frequency = <8000000>;
+		//     int1-gpios = <&gpio0 11 0>;
+	// };
+};
+
+&uart0 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
