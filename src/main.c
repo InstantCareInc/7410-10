@@ -64,8 +64,6 @@ int main(void)
 {
 	LOG_INF("Hello World! %s\n", CONFIG_BOARD_TARGET);
 
-	bool led_state = true;
-
 	if (setup_gpio() < 0)
 	{
 		LOG_ERR("Failed to setup GPIO");
@@ -76,32 +74,11 @@ int main(void)
 	LOG_INF("SOUNDER0 device: %s ready=%d", buzzer0_spec.port->name, device_is_ready(buzzer0_spec.port));
 	LOG_INF("SOUNDER1 device: %s ready=%d", buzzer1_spec.port->name, device_is_ready(buzzer1_spec.port));
 	LOG_INF("SOUNDER2 device: %s ready=%d", buzzer2_spec.port->name, device_is_ready(buzzer2_spec.port));
+	gpio_pin_set_dt(&led1_spec, 0);
 
 	while (1)
 	{
-		if (gpio_pin_toggle_dt(&led0_spec) < 0)
-		{
-			return 0;
-		}
-		if (gpio_pin_toggle_dt(&led1_spec) < 0)
-		{
-			return 0;
-		}
-		if (gpio_pin_toggle_dt(&buzzer0_spec) < 0)
-		{
-			return 0;
-		}
-		if (gpio_pin_toggle_dt(&buzzer1_spec) < 0)
-		{
-			return 0;
-		}
-		if (gpio_pin_toggle_dt(&buzzer2_spec) < 0)
-		{
-			return 0;
-		}
-		led_state = !led_state;
-		// printk("LEDs are %s\n", led_state ? "ON" : "OFF");
-		k_msleep(1000);
+		// Wait here
 	}
 
 	return 0;
