@@ -14,10 +14,16 @@ LOG_MODULE_REGISTER(main);
 /* Get the node identifiers from the devicetree */
 #define LED0_NODE DT_ALIAS(led0)
 #define LED1_NODE DT_ALIAS(led1)
+#define BUZZER0_NODE DT_ALIAS(buzzer0)
+#define BUZZER1_NODE DT_ALIAS(buzzer1)
+#define BUZZER2_NODE DT_ALIAS(buzzer2)
 
 /* Pull out the device from the node */
 static const struct gpio_dt_spec led0_spec = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 static const struct gpio_dt_spec led1_spec = GPIO_DT_SPEC_GET(LED1_NODE, gpios);
+static const struct gpio_dt_spec buzzer0_spec = GPIO_DT_SPEC_GET(BUZZER0_NODE, gpios);
+static const struct gpio_dt_spec buzzer1_spec = GPIO_DT_SPEC_GET(BUZZER1_NODE, gpios);
+static const struct gpio_dt_spec buzzer2_spec = GPIO_DT_SPEC_GET(BUZZER2_NODE, gpios);
 
 int setup_gpio(void)
 {
@@ -33,6 +39,24 @@ int setup_gpio(void)
 	}
 	gpio_pin_configure_dt(&led1_spec, GPIO_OUTPUT_ACTIVE);
 
+	if (!gpio_is_ready_dt(&buzzer0_spec))
+	{
+		return -ENODEV;
+	}
+	gpio_pin_configure_dt(&buzzer0_spec, GPIO_OUTPUT_INACTIVE);
+
+	if (!gpio_is_ready_dt(&buzzer1_spec))
+	{
+		return -ENODEV;
+	}
+	gpio_pin_configure_dt(&buzzer1_spec, GPIO_OUTPUT_INACTIVE);
+
+	if (!gpio_is_ready_dt(&buzzer2_spec))
+	{
+		return -ENODEV;
+	}
+	gpio_pin_configure_dt(&buzzer2_spec, GPIO_OUTPUT_INACTIVE);
+
 	return 0;
 }
 
@@ -47,10 +71,11 @@ int main(void)
 		LOG_ERR("Failed to setup GPIO");
 		return 0;
 	}
-	printk("LED0 GPIO: %s pin %d flags %x\n", led0_spec.port->name, led0_spec.pin, led0_spec.dt_flags);
-	printk("LED1 GPIO: %s pin %d flags %x\n", led1_spec.port->name, led1_spec.pin, led1_spec.dt_flags);
 	LOG_INF("LED0 device: %s ready=%d", led0_spec.port->name, device_is_ready(led0_spec.port));
 	LOG_INF("LED1 device: %s ready=%d", led1_spec.port->name, device_is_ready(led1_spec.port));
+	LOG_INF("SOUNDER0 device: %s ready=%d", buzzer0_spec.port->name, device_is_ready(buzzer0_spec.port));
+	LOG_INF("SOUNDER1 device: %s ready=%d", buzzer1_spec.port->name, device_is_ready(buzzer1_spec.port));
+	LOG_INF("SOUNDER2 device: %s ready=%d", buzzer2_spec.port->name, device_is_ready(buzzer2_spec.port));
 
 	while (1)
 	{
@@ -62,8 +87,20 @@ int main(void)
 		{
 			return 0;
 		}
+		if (gpio_pin_toggle_dt(&buzzer0_spec) < 0)
+		{
+			return 0;
+		}
+		if (gpio_pin_toggle_dt(&buzzer1_spec) < 0)
+		{
+			return 0;
+		}
+		if (gpio_pin_toggle_dt(&buzzer2_spec) < 0)
+		{
+			return 0;
+		}
 		led_state = !led_state;
-		printk("LEDs are %s\n", led_state ? "ON" : "OFF");
+		// printk("LEDs are %s\n", led_state ? "ON" : "OFF");
 		k_msleep(1000);
 	}
 
