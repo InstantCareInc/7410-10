@@ -9,8 +9,13 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 #include <stdio.h>
+#include <zephyr/bluetooth/bluetooth.h>
+#include <zephyr/bluetooth/gap.h>
+#include <zephyr/bluetooth/conn.h>
 
-LOG_MODULE_REGISTER(main);
+#include "ble_manager.h"
+
+LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 /* Get the node identifiers from the devicetree */
 #define LED0_NODE DT_ALIAS(led0)
@@ -81,13 +86,15 @@ int setup_gpio(void)
 
 int main(void)
 {
-	LOG_INF("Hello World! %s\n", CONFIG_BOARD_TARGET);
+	int err;
+	printf("Hello World! %s\n", CONFIG_BOARD_TARGET);
 
 	if (setup_gpio() < 0)
 	{
 		LOG_ERR("Failed to setup GPIO");
 		return 0;
 	}
+
 	printf("\n\r\n\r");
 	printf("LED0 device: %s ready=%d\n", led0_spec.port->name, device_is_ready(led0_spec.port));
 	printf("LED1 device: %s ready=%d\n", led1_spec.port->name, device_is_ready(led1_spec.port));
@@ -96,6 +103,13 @@ int main(void)
 	printf("SOUNDER2 device: %s ready=%d\n", buzzer2_spec.port->name, device_is_ready(buzzer2_spec.port));
 	printf("BUTTON0 device: %s ready=%d\n", button0_spec.port->name, device_is_ready(button0_spec.port));
 	gpio_pin_set_dt(&led1_spec, 0);
+
+	err = ble_manager_init();
+	if (err)
+	{
+		LOG_ERR("BLE Manager init failed (err %d)\n", err);
+		return -1;
+	}
 
 	while (1)
 	{
