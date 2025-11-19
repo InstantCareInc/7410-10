@@ -20,5 +20,5 @@ This application was built using the nRF Connect Extension for Visual Studio Cod
 Custom Board Support
 ********************
 
-The schematic for the 7410-10 board can be found here: `7410-10 Schematic <SCH_7410_006.pdf>`_
+The schematic for the 7410-10 board can be found here: `7410-10 Schematic <SCH_7410_10_006.pdf>`_
 
