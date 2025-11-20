@@ -1,4 +1,0 @@
-name: bmp585
-build:
-  kconfig: Kconfig
-  cmake: .

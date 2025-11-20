@@ -1,6 +1,0 @@
-menu "BMP585 Module Configuration"
-
-# This line includes the Kconfig file for the sensor directory
-source "drivers/sensor/Kconfig" 
-
-endmenu

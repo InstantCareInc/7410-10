@@ -1,9 +1,0 @@
-# Copyright (c) 2025, Bosch Sensortec GmbH
-# SPDX-License-Identifier: Apache-2.0
-
-description: |
-    Bosch BMP5 pressure sensor accessed through I2C bus
-
-compatible: "bosch,bmp585"
-
-include: [i2c-device.yaml, "bosch,bmp585.yaml"]
