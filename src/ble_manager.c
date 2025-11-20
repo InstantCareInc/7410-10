@@ -63,7 +63,7 @@ static const struct bt_data ad[] = {
 };
 
 static const struct bt_data sd[] = {
-    BT_DATA_BYTES(BT_DATA_UUID128_ALL, 0x0A, 0x18), // 0x180A in little-endian
+    BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_ACCEL_SERVICE_VAL),
 };
 
 static struct k_work adv_work;
