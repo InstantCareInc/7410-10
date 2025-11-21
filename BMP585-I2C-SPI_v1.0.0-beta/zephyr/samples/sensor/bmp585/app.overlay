@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2025 Bosch Sensortec GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/* 
+&arduino_i2c {
+	status = "okay";
+	bmp585@46{
+		compatible = "bosch,bmp585";
+		int-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+		reg = <0x46>;
+	};
+};
+*/
+&arduino_spi {
+	status = "okay";
+	bmp585@0{
+		compatible = "bosch,bmp585";
+		int-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(10)>;
+	};
+};
