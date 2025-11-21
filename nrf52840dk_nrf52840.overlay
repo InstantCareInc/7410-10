@@ -13,7 +13,7 @@
         buzzer2 = &SN3;
 
         /* SPI devices */
-        spi0 = &spi0;
+        spi1 = &spi1;
         accel0 = &adxl367;
         press0 = &bmp585;
     };
