@@ -172,7 +172,7 @@ int setup_gpio(void)
 	if (!device_is_ready(press_dev))
 	{
 		LOG_INF("Pressure sensor device not ready\n");
-		return -ENODEV;
+		// return -ENODEV;
 	}
 	LOG_INF("Pressure sensor device: %s ready=%d\n", press_dev->name, device_is_ready(press_dev));
 
@@ -180,7 +180,6 @@ int setup_gpio(void)
 	{
 		LOG_INF("Accelerometer device not ready\n");
 		// return -ENODEV;
-		return 0; // temp workaround while debugging SPI issues
 	}
 	LOG_INF("Accelerometer device: %s ready=%d\n", accel_dev->name, device_is_ready(accel_dev));
 
