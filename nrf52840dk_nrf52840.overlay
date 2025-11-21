@@ -22,17 +22,17 @@
         compatible = "gpio-leds";
 
         SN1: SN1 {
-            gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio0 2 0>;
             label = "SN1";
         };
 
         SN2: SN2 {
-            gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio0 3 0>;
             label = "SN2";
         };
 
         SN3: SN3 {
-            gpios = <&gpio0 6 0>;
+            gpios = <&gpio0 4 0>;
             label = "SN3";
         };
     };
@@ -47,19 +47,18 @@
     status = "okay";
 };
 
-/* SPI0 + devices */
-&spi0 {
+/* SPI1 + devices */
+&spi1 {
     status = "okay";
-    pinctrl-0 = <&spi0_default>;
-    pinctrl-1 = <&spi0_sleep>;
+    pinctrl-0 = <&spi1_default>;
+    pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
-    cs-gpios = <&gpio0 20 GPIO_ACTIVE_LOW>, <&gpio0 21 GPIO_ACTIVE_LOW>;
+    cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>, <&gpio0 30 GPIO_ACTIVE_LOW>;
 
     adxl367: adxl367@0 {
         compatible = "adi,adxl367";
         reg = <0>;
         spi-max-frequency = <1000000>;
-        int1-gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
         label = "ADXL367";
     };
 
@@ -67,15 +66,29 @@
         compatible = "bosch,bmp585";
         reg = <1>;
         spi-max-frequency = <1000000>;
-        int-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
         label = "BMP585";
+    };
+
+    max-frequency = <DT_FREQ_M(4)>;
+};
+
+&spi1_default {
+    group1 {
+        psels = <NRF_PSEL(SPIM_SCK, 0, 26)>,
+                <NRF_PSEL(SPIM_MOSI, 0, 27)>,
+                <NRF_PSEL(SPIM_MISO, 0, 28)>;
     };
 };
 
-&spi0_default {
+&spi1_sleep {
     group1 {
-        psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,
-                <NRF_PSEL(SPIM_MOSI, 0, 18)>,
-                <NRF_PSEL(SPIM_MISO, 0, 19)>;
+        psels = <NRF_PSEL(SPIM_SCK, 0, 26)>,
+                <NRF_PSEL(SPIM_MOSI, 0, 27)>,
+                <NRF_PSEL(SPIM_MISO, 0, 28)>;
     };
+};
+
+
+&uart0 {
+    status = "okay";
 };
