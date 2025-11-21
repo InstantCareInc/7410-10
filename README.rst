@@ -17,8 +17,10 @@ This application was built using the nRF Connect Extension for Visual Studio Cod
 #. Add Bosch Beta BMP585 driver to your SDK installtion (See instructions in next section)
 #. Open this project folder in Visual Studio Code using the NRF Connect Extension option "Open an existing application"
 #. Select the build target correct For this application.
+
    - For the 7410-10 board select: `PCB_7410_10_006`
    - For the nRF52840DK select: `nrf52840dk_nrf52840` (make sure to add the nrf52840dk_nrf52840.overlay file to the build configuration)
+
 #. Click the build button in the bottom Actions bar  of NRF Connect Extension.
 
 Adding Bosch Beta BMP585 Driver
