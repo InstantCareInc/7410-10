@@ -11,6 +11,7 @@ Building and Running
 ********************
 
 This application was built using the nRF Connect Extension for Visual Studio Code. To build the application ensure you have the nRF Connect Extension installed and folliw these steps:
+
 #. Select or Install nRF Connect SDK version 3.1.1
 #. Select Install nRF Connect SDK Toolchain version 3.1.1
 #. Add Bosch Beta BMP585 driver to your SDK installtion (See instructions in next section)
@@ -23,6 +24,7 @@ This application was built using the nRF Connect Extension for Visual Studio Cod
 Adding Bosch Beta BMP585 Driver
 *******************************
 This application uses a beta version of the Bosch BMP585 driver which is not included in the standard nRF Connect SDK installation. To add this driver to your SDK installation follow these steps:
+
 #. Navigate to your nRF Connect SDK installation folder.
 #. Open the `\ncs\zephyr\drivers\sensor` folder & copy the contents from `7410-10\BMP585-I2C-SPI_v1.0.0-beta\zephyr\drivers\sensor` into this folder.
 #. In the CMakeLists.txt file located in the `\ncs\zephyr\drivers\sensor` folder, add the following line to the list of source files:
