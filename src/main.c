@@ -208,20 +208,20 @@ int main(void)
 		return -1;
 	}
 
-	struct sensor_value pressure_oversampling_rate = {BMP5_OVERSAMPLING_16X, 1};
+	struct sensor_value pressure_oversampling_rate = {BMP5_OVERSAMPLING_128X, 1};
 	if (sensor_attr_set(press_dev, SENSOR_CHAN_PRESS, SENSOR_ATTR_OVERSAMPLING, &pressure_oversampling_rate) != 0)
 	{
 		printf("Could not set pressure oversampling rate of %d", pressure_oversampling_rate.val1);
 		return 0;
 	}
-	struct sensor_value temperature_oversampling_rate = {BMP5_OVERSAMPLING_2X, 1};
+	struct sensor_value temperature_oversampling_rate = {BMP5_OVERSAMPLING_128X, 1};
 	if (sensor_attr_set(press_dev, SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_OVERSAMPLING, &temperature_oversampling_rate) != 0)
 	{
 		printf("Could not set temperature oversampling rate of %d", pressure_oversampling_rate.val1);
 		return 0;
 	}
 
-	struct sensor_value pressure_odr = {BMP5_ODR_25_HZ, 0};
+	struct sensor_value pressure_odr = {BMP5_ODR_05_HZ, 0};
 	if (sensor_attr_set(press_dev, SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_SAMPLING_FREQUENCY, &pressure_odr) != 0)
 	{
 		printf("Could not set pressure odr of %d", pressure_oversampling_rate.val1);
