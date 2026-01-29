@@ -1,0 +1,3 @@
+if SENSOR
+rsource "bmp585/Kconfig"
+endif # SENSOR

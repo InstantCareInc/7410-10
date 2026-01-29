@@ -1,0 +1,1 @@
+add_subdirectory_ifdef(CONFIG_BMP585 bmp585)
