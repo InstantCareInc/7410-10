@@ -151,3 +151,8 @@
     pinctrl-names = "default", "sleep";
 };
 
+&uicr {
+	gpio-as-nreset;
+};
+
+
