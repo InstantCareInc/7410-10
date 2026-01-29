@@ -8,7 +8,6 @@ project(7410-10)
 
 target_sources(app PRIVATE
     src/main.c
-    src/ble_manager.c
 )
 
 zephyr_library_include_directories(.)
