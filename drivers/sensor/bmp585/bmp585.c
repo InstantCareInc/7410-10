@@ -387,7 +387,7 @@ static int bmp585_sample_fetch(const struct device *dev,
 			uint32_t raw_pressure = (uint32_t)((uint32_t)(data[5] << 16) | (uint16_t)(data[4] << 8) | data[3]);
 			/* Division by 2^6(whose equivalent value is 64) is performed to get pressure data in Pa */
 			drv->last_sample.pressure = (float)(raw_pressure / 64.0);
-			drv->last_sample.pressure = drv->last_sample.pressure / 1000.0;
+			drv->last_sample.pressure = drv->last_sample.pressure / 1000.0f;
 		}
 		else
 		{
