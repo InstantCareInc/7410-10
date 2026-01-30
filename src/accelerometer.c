@@ -45,7 +45,7 @@ static int cmd_get_accel(const struct shell *sh, size_t argc, char **argv)
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE(get_subcmds,
-    SHELL_CMD(data, NULL, "Read X, Y, Z axes", cmd_get_accel),
+    SHELL_CMD(data, NULL, "Read X, Y, Z axis", cmd_get_accel),
     SHELL_SUBCMD_SET_END
 );
 
