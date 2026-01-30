@@ -23,35 +23,22 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t
 
 int main(void)
 {
-	int err;
-	if (leds_init() < 0) {
-		LOG_ERR("Failed to initalize LEDs");
-		return 0;
+	int err = 0;
+	err |= leds_init();
+	err |= button_init(button_pressed);
+	err |= sounders_init();
+	err |= pressure_sensor_init();
+	err |= accelerometer_init();
+
+	if (err == 0) {
+		printk("All I/O initialized successfully\n");
+	} else {
+		LOG_WRN("Some I/O failed to initialize. System may be in a degraded state.");
 	}
 
-	if (button_init(button_pressed) < 0) {
-		LOG_ERR("Failed to initalize button");
-		return 0;
-	}
+	led_red_set(0); // Turn off red LED
+	led_grn_set(1); // Turn on green LED
 
-	if (sounders_init() < 0) {
-		LOG_ERR("Failed to initalize sounders");
-		return 0;
-	}
-
-	if (pressure_sensor_init() < 0) {
-		LOG_ERR("Failed to initialize pressure sensor");
-		return 0;
-	}
-
-	if (accelerometer_init() < 0) {
-		LOG_ERR("Failed to initialize accelerometer");
-		// return 0;
-	}
-
-	err = led_red_set(0);
-
-	printk("All I/O initalized successfully");
 	while (1)
 	{
 		k_sleep(K_FOREVER);
