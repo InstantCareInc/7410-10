@@ -11,6 +11,11 @@ project(7410-10)
 
 target_sources(app PRIVATE
     src/main.c
+    src/leds.c
+    src/button.c
+    src/sounders.c
+    src/pressure_sensor.c
+    src/accelerometer.c
 )
 
 zephyr_library_include_directories(.)
