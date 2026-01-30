@@ -17,7 +17,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
-	printf("Button pressed! pins=0x%x\n", pins);
+	LOG_INF("Button pressed!");
 	led_red_toggle();
 }
 
@@ -31,7 +31,7 @@ int main(void)
 	err |= accelerometer_init();
 
 	if (err == 0) {
-		printk("All I/O initialized successfully\n");
+		LOG_INF("All I/O initialized successfully");
 	} else {
 		LOG_WRN("Some I/O failed to initialize. System may be in a degraded state.");
 	}
