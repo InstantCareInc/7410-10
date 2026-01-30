@@ -219,4 +219,4 @@ SHELL_STATIC_SUBCMD_SET_CREATE(press_subcmds,
 				SHELL_CMD(get, &get_subcmds, "Get BMP585 values", NULL),
 				SHELL_CMD(set, &set_subcmds, "Set BMP585 values", NULL),
 				SHELL_SUBCMD_SET_END);
-SHELL_CMD_REGISTER(BMP585, &press_subcmds, "LED control commands", NULL);
+SHELL_CMD_REGISTER(BMP585, &press_subcmds, "BMP585 sensor control commands", NULL);
