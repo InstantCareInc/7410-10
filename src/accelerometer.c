@@ -29,17 +29,18 @@ static int cmd_get_accel(const struct shell *sh, size_t argc, char **argv)
 {
     struct sensor_value accel[3];
     
-    if (sensor_sample_fetch(accelerometer_get_device()) < 0) {
-        shell_error(sh, "Failed to fetch sample");
-        return -EIO;
+    int err = sensor_sample_fetch(accelerometer_get_device());
+    if (err != 0) {
+        shell_error(sh, "Sensor fetch failed (err %d)", err);
+        return err;
     }
 
     sensor_channel_get(accelerometer_get_device(), SENSOR_CHAN_ACCEL_XYZ, accel);
 
-    shell_print(sh, "X: %d.%06d, Y: %d.%06d, Z: %d.%06d m/s^2",
-                accel[0].val1, abs(accel[0].val2),
-                accel[1].val1, abs(accel[1].val2),
-                accel[2].val1, abs(accel[2].val2));
+    shell_print(sh, "X: %.2f, Y: %.2f, Z: %.2f (m/s^2)\n",
+               sensor_value_to_double(&accel[0]),
+               sensor_value_to_double(&accel[1]),
+               sensor_value_to_double(&accel[2]));
     return 0;
 }
 
@@ -49,8 +50,8 @@ SHELL_STATIC_SUBCMD_SET_CREATE(get_subcmds,
 );
 
 SHELL_STATIC_SUBCMD_SET_CREATE(accel_subcmds,
-    SHELL_CMD(get, &get_subcmds, "Get accelerometer data", NULL),
+    SHELL_CMD(get, &get_subcmds, "Get ADXL367 values", NULL),
     SHELL_SUBCMD_SET_END
 );
 
-SHELL_CMD_REGISTER(ADXL367, &accel_subcmds, "ADXL367 control commands", NULL);
+SHELL_CMD_REGISTER(adxl367, &accel_subcmds, "ADXL367 sensor control commands", NULL);
