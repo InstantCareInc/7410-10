@@ -563,8 +563,6 @@ static int bmp585_init(const struct device *dev)
 			drv->chip_id, BMP5_CHIP_ID_PRIM, BMP5_CHIP_ID_SEC);
 		return BMP5_E_INVALID_CHIP_ID;
 	}
-	LOG_ERR("read chip id (%x). Expected (%x or %x)",
-			drv->chip_id, BMP5_CHIP_ID_PRIM, BMP5_CHIP_ID_SEC);
 	return ret;
 }
 
