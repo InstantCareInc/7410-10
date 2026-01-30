@@ -26,19 +26,19 @@ const struct device *pressure_sensor_get_device(void)
 
 static int cmd_set_press_oversampling(const struct shell *sh, size_t argc, char **argv, void *data) {
 	ARG_UNUSED(argc);
-	int val = (int)data;
 
 	struct sensor_value pressure_oversampling_rate = {
-		.val1 = val,
-		.val2 = 0
+		.val1 = (int)data,
+		.val2 = 1 // Enable pressure measurements in bmp585.c
 	};
 
 	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_PRESS, SENSOR_ATTR_OVERSAMPLING, &pressure_oversampling_rate);
 	if (err < 0) {
-		shell_error(sh, "Could not set pressure oversampling rate of %d (err %d)", pressure_oversampling_rate.val1, err);
+		shell_error(sh, "Failed to set pressure OSR (err %d)", err);
+		return err;
 	}
 	
-	shell_print(sh, "Pressure oversampling rate set to: %s", argv[0]);
+	shell_print(sh, "Pressure OSR set to: %s", argv[0]);
 	return 0;
 }
 
@@ -55,19 +55,19 @@ SHELL_SUBCMD_DICT_SET_CREATE(sub_set_press_oversampling, cmd_set_press_oversampl
 
 static int cmd_set_temp_oversampling(const struct shell *sh, size_t argc, char **argv, void *data) {
 	ARG_UNUSED(argc);
-	int val = (int)data;
 
 	struct sensor_value temp_oversampling_rate = {
-		.val1 = val,
-		.val2 = 0
+		.val1 = (int)data,
+		.val2 = 0 // unused in bmp585.c
 	};
 
 	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_OVERSAMPLING, &temp_oversampling_rate);
 	if (err < 0) {
-		shell_error(sh, "Could not set temperature oversampling rate of %d (err %d)", temp_oversampling_rate.val1, err);
+		shell_error(sh, "Failed to set temp OSR (err %d)", err);
+		return err;
 	}
 	
-	shell_print(sh, "Temperature oversampling rate set to: %s", argv[0]);
+	shell_print(sh, "Temperature OSR set to: %s", argv[0]);
 	return 0;
 }
 
@@ -84,19 +84,19 @@ SHELL_SUBCMD_DICT_SET_CREATE(sub_set_temp_oversampling, cmd_set_temp_oversamplin
 
 static int cmd_set_odr(const struct shell *sh, size_t argc, char **argv, void *data) {
 	ARG_UNUSED(argc);
-	int val = (int)data;
 
 	struct sensor_value press_odr = {
-		.val1 = val,
-		.val2 = 0
+		.val1 = (int)data,
+		.val2 = 0 // Unused in bmp585.c
 	};
 
-	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_SAMPLING_FREQUENCY, &press_odr);
+	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_ALL, SENSOR_ATTR_SAMPLING_FREQUENCY, &press_odr);
 	if (err < 0) {
-		shell_error(sh, "Could not set pressure ODR of %d (err %d)", press_odr.val1, err);
+		shell_error(sh, "Could not set ODR (err %d)", err);
+		return err;
 	}
 	
-	shell_print(sh, "Pressure ODR set to: %s", argv[0]);
+	shell_print(sh, "ODR set to: %s", argv[0]);
 	return 0;
 }
 
@@ -137,16 +137,16 @@ SHELL_SUBCMD_DICT_SET_CREATE(sub_set_odr, cmd_set_odr,
 
 static int cmd_set_powermode(const struct shell *sh, size_t argc, char **argv, void *data) {
 	ARG_UNUSED(argc);
-	int val = (int)data;
 
 	struct sensor_value power_mode = {
-		.val1 = val,
-		.val2 = 0
+		.val1 = (int)data,
+		.val2 = 0 // Unused in bmp585.c
 	};
 
-	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_PRESS, BMP5_ATTR_POWER_MODE, &power_mode);
+	int err = sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_ALL, BMP5_ATTR_POWER_MODE, &power_mode);
 	if (err < 0) {
-		shell_error(sh, "Could not set power mode of %d (err %d)", power_mode.val1, err);
+		shell_error(sh, "Power mode change failed (err %d)", err);
+		return err;
 	}
 	
 	shell_print(sh, "Power mode set to: %s", argv[0]);
