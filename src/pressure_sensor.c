@@ -200,8 +200,8 @@ static int cmd_get_temp(const struct shell *sh, size_t argc, char **argv) {
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE(oversample_subcmds,
-				SHELL_CMD(p_oversample, &sub_set_press_oversampling, "Set pressure oversampling rate", NULL),
-				SHELL_CMD(t_oversample, &sub_set_temp_oversampling, "Set temperature oversampling rate", NULL),
+				SHELL_CMD(pressure, &sub_set_press_oversampling, "Set pressure oversampling rate", NULL),
+				SHELL_CMD(temperature, &sub_set_temp_oversampling, "Set temperature oversampling rate", NULL),
 				SHELL_SUBCMD_SET_END);
 
 SHELL_STATIC_SUBCMD_SET_CREATE(set_subcmds,
@@ -211,8 +211,8 @@ SHELL_STATIC_SUBCMD_SET_CREATE(set_subcmds,
 				SHELL_SUBCMD_SET_END);
 
 SHELL_STATIC_SUBCMD_SET_CREATE(get_subcmds,
-				SHELL_CMD(pressure, &cmd_get_press, "Get pressure reading (kPa)", NULL),
-				SHELL_CMD(temperature, &cmd_get_temp, "Get ambient temperature reading (Celsius)", NULL),
+				SHELL_CMD(pressure, NULL, "Get pressure reading (kPa)", &cmd_get_press),
+				SHELL_CMD(temperature, NULL, "Get ambient temperature reading (Celsius)", &cmd_get_temp),
 				SHELL_SUBCMD_SET_END);
 
 SHELL_STATIC_SUBCMD_SET_CREATE(press_subcmds,
