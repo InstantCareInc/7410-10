@@ -37,7 +37,10 @@ int main(void)
 	}
 
 	led_red_set(0); // Turn off red LED
-	led_grn_set(1); // Turn on green LED
+	led_grn_set(0); // Turn off green LED
+
+	err = data_ready_init();
+	err = free_fall_init();
 
 	while (1)
 	{
