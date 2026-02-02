@@ -21,7 +21,7 @@ int bmp585_trigger_set(const struct device *dev,
 	int ret = -ENOTSUP;
 	struct bmp585_data* drv = (struct bmp585_data *) dev->data;
 	uint8_t int_source = 0;
-	LOG_ERR("trig->type %d", trig->type);
+	LOG_DBG("trig->type %d", trig->type);
 	switch(trig->type)
 	{
 		case SENSOR_TRIG_DATA_READY:
@@ -29,7 +29,7 @@ int bmp585_trigger_set(const struct device *dev,
 		int_source = BMP5_SET_BITS_POS_0(int_source, BMP5_INT_DRDY_EN, BMP5_ENABLE);
 		ret = bmp585_reg_write(dev, BMP5_REG_INT_SOURCE, &int_source, 1);
 		ret = bmp585_reg_read(dev, BMP5_REG_INT_SOURCE, &int_source, 1);
-		LOG_ERR("reg 0x%x value 0x%x", BMP5_REG_INT_SOURCE, int_source);
+		LOG_DBG("reg 0x%x value 0x%x", BMP5_REG_INT_SOURCE, int_source);
 		drv->drdy_handler = handler;
 		break;
 		default:
@@ -115,7 +115,7 @@ int bmp585_trigger_init(const struct device *dev)
 				/* Finally transfer the interrupt configurations */
 				ret = bmp585_reg_write(dev, BMP5_REG_INT_CONFIG, &int_config, 1);
 				ret = bmp585_reg_read(dev, BMP5_REG_INT_CONFIG, &int_config, 1);
-				LOG_ERR("reg 0x%x value 0x%x", BMP5_REG_INT_CONFIG, int_config);
+				LOG_DBG("reg 0x%x value 0x%x", BMP5_REG_INT_CONFIG, int_config);
 			}
 		}
 	}
