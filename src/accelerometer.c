@@ -16,9 +16,14 @@ static void free_fall_handler(const struct device *dev, const struct sensor_trig
     led_grn_set(1);
 }
 
+const struct device *accelerometer_get_device(void)
+{
+	return accel_dev;
+}
+
 int accelerometer_init(void)
 {
-	if (!device_is_ready(accel_dev)) {
+	if (!device_is_ready(accelerometer_get_device())) {
 		LOG_ERR("Accelerometer device not ready");
 		return -ENODEV;
 	}
@@ -26,9 +31,36 @@ int accelerometer_init(void)
 	return 0;
 }
 
-const struct device *accelerometer_get_device(void)
+// Refer to ADXl367 datasheet for free-fall detection setup
+int free_fall_init(void)
 {
-	return accel_dev;
+    struct sensor_value val;
+
+    // Set ODR to 100Hz
+    val.val1 = 100;
+    val.val2 = 0;
+    sensor_attr_set(accelerometer_get_device(), SENSOR_CHAN_ACCEL_XYZ, SENSOR_ATTR_SAMPLING_FREQUENCY, &val);
+
+    struct sensor_value threshold = {
+        .val1 = 784, //588
+        .val2 = 0,
+    };
+    sensor_attr_set(accelerometer_get_device(), 
+                            SENSOR_CHAN_ACCEL_XYZ, 
+                            SENSOR_ATTR_LOWER_THRESH, 
+                            &threshold);
+
+    struct sensor_trigger trig = {
+        .type = SENSOR_TRIG_THRESHOLD,
+        .chan = SENSOR_CHAN_ACCEL_XYZ,
+    };
+
+    if (sensor_trigger_set(accelerometer_get_device(), &trig, free_fall_handler) < 0) {
+        LOG_ERR("Failed to set free-fall trigger");
+        return -EIO;
+    }
+
+    return 0;
 }
 
 
@@ -64,47 +96,10 @@ static int cmd_accel_freefall(const struct shell *sh, size_t argc, char **argv)
     }
 
     if (enable) {
-        
-        double thresh_g = 0.6; // default to 600mg
-        if (argc >= 3) {
-            thresh_g = (double)shell_strtol(argv[2], 10, &err);
-            if (err < 0 || thresh_g <= 0) {
-                shell_error(sh, "Cannot parse %s as threshold g value.", argv[2]);
-                return -EINVAL;
-            }
-        }
-
-        uint32_t dur_ms = 100; // default to 100ms
-        if (argc >= 4) {
-            dur_ms = (uint32_t)shell_strtol(argv[3], 10, &err);
-            if (err < 0 || dur_ms <= 0) {
-                shell_error(sh, "Cannot parse %s as duration in ms.", argv[3]);
-                return -EINVAL;
-            }
-        }
-
-        /* Set threshold */
-        struct sensor_value thresh;
-        sensor_g_to_ms2(thresh_g, &thresh);
-        sensor_attr_set(accelerometer_get_device(), SENSOR_CHAN_ACCEL_XYZ, SENSOR_ATTR_UPPER_THRESH, &thresh);
-
-        /* Set duration to 100ms */
-        struct sensor_value dur = {.val1 = dur_ms};
-        sensor_attr_set(accelerometer_get_device(), SENSOR_CHAN_ACCEL_XYZ, SENSOR_ATTR_HYSTERESIS, &dur);
-
-        /* Register Trigger */
-        struct sensor_trigger trig = {
-            .type = SENSOR_TRIG_FREEFALL,
-            .chan = SENSOR_CHAN_ACCEL_XYZ,
-        };
-
-        if (sensor_trigger_set(accelerometer_get_device(), &trig, free_fall_handler) < 0) {
-            shell_error(sh, "Failed to enable free-fall interrupt");
-            return -EIO;
-        }
+        free_fall_init();
     } else {
         /* Disable trigger */
-        struct sensor_trigger trig = {.type = SENSOR_TRIG_FREEFALL};
+        struct sensor_trigger trig = {.type = SENSOR_TRIG_THRESHOLD};
         sensor_trigger_set(accelerometer_get_device(), &trig, NULL);
         shell_print(sh, "Free-fall detection disarmed.");
     }
@@ -118,7 +113,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(get_subcmds,
 );
 
 SHELL_STATIC_SUBCMD_SET_CREATE(set_subcmds,
-    SHELL_CMD_ARG(freefall, NULL, "Enable/Disable free-fall detection (Usage: adxl367 set freefall <on|off> [thresh_g] [dur_ms])", cmd_accel_freefall, 2, 2),
+    SHELL_CMD_ARG(freefall, NULL, "Enable/Disable free-fall detection (Usage: adxl367 set freefall <on|off> [thresh_g])", cmd_accel_freefall, 2, 0),
     SHELL_SUBCMD_SET_END
 );
 
