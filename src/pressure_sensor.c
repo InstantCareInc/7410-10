@@ -26,59 +26,55 @@ const struct device *pressure_sensor_get_device(void)
 
 static void data_ready_work_handler(struct k_work *work)
 {
-    static double velocity_buffer[VELOCITY_SAMPLES] = {0};
-    static int velocity_index = 0;
-    static double last_altitude_m = 0.0;
+    static double last_pressure_pa = 0.0;
     static int64_t last_time_ms = 0;
-    static bool first_reading = true;
+    static bool first = true;
     static bool in_freefall = false;
+
     struct sensor_value pressure;
-    
-    if (sensor_sample_fetch(pressure_sensor_get_device()) == 0) {
-        if (sensor_channel_get(pressure_sensor_get_device(), SENSOR_CHAN_PRESS, &pressure) == 0) {
-            double pressure_val = sensor_value_to_double(&pressure);
-            double altitude_m = 44330.0 * (1.0 - pow(pressure_val / BMP5_SEA_LEVEL_PRESSURE_PA, 0.1903));
-            int64_t current_time_ms = k_uptime_get();
-            
-            if (first_reading) {
-                last_altitude_m = altitude_m;
-                last_time_ms = current_time_ms;
-                first_reading = false;
-            } else {
-                double altitude_change = last_altitude_m - altitude_m;
-                double time_diff_s = (current_time_ms - last_time_ms) / 1000.0;
-                double instant_velocity = altitude_change / time_diff_s;
-                
-                // Store velocity in circular buffer
-                velocity_buffer[velocity_index] = instant_velocity;
-                velocity_index = (velocity_index + 1) % VELOCITY_SAMPLES;
-                
-                // Calculate average velocity over last N samples
-                double avg_velocity = 0;
-                for (int i = 0; i < VELOCITY_SAMPLES; i++) {
-                    avg_velocity += velocity_buffer[i];
-                }
-                avg_velocity /= VELOCITY_SAMPLES;
-                
-                const double FREEFALL_THRESHOLD = 6.0;  // m/s
-                
-                if (avg_velocity > FREEFALL_THRESHOLD) {
-                    if (!in_freefall) {
-						led_red_set(1);
-                        printk("FREEFALL DETECTED! Velocity: %.2f m/s at %.2f m\n", 
-                               avg_velocity, altitude_m);
-                        in_freefall = true;
-                    }
-                } else if (in_freefall && avg_velocity < 1.0) {
-                    printk("Freefall ended at %.2f m\n", altitude_m);
-                    in_freefall = false;
-                }
-                
-                last_altitude_m = altitude_m;
-                last_time_ms = current_time_ms;
-            }
+
+    if (sensor_sample_fetch(pressure_sensor_get_device()) != 0) {
+        return;
+    }
+
+    if (sensor_channel_get(pressure_sensor_get_device(), SENSOR_CHAN_PRESS, &pressure) != 0) {
+        return;
+    }
+
+    double p = sensor_value_to_double(&pressure);
+    int64_t now = k_uptime_get();
+
+    if (first) {
+        last_pressure_pa = p;
+        last_time_ms = now;
+        first = false;
+        return;
+    }
+
+    double dt = (now - last_time_ms) / 1000.0;
+    double dp = p - last_pressure_pa;  // positive when falling
+    double dp_dt = dp / dt;
+
+    /*
+     * Detection thresholds tuned for ~1 ft free fall
+     */
+    const double FREEFALL_DPDT = 0.2;   // Pa/sec
+    const double END_DPDT      = 0.1;    // Pa/sec
+
+    if (!in_freefall) {
+        if (dp_dt > FREEFALL_DPDT) {
+            in_freefall = true;
+            led_red_set(1);
+            printk(">>> FREE FALL DETECTED! dP/dt = %.1f Pa/s <<<\n", dp_dt);
+        }
+    } else {
+        if (dp_dt < END_DPDT) {
+            in_freefall = false;
         }
     }
+
+    last_pressure_pa = p;
+    last_time_ms = now;
 }
 
 int pressure_sensor_init(void)
@@ -88,18 +84,18 @@ int pressure_sensor_init(void)
 		return -ENODEV;
 	}
 
-	struct sensor_value pressure_oversampling_rate = { BMP5_OVERSAMPLING_16X, 1 };
+	struct sensor_value pressure_oversampling_rate = { BMP5_OVERSAMPLING_4X, 1 };
 	if (sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_PRESS, SENSOR_ATTR_OVERSAMPLING, &pressure_oversampling_rate) != 0) {
 		LOG_ERR("Could not set oversampling rate of %d", pressure_oversampling_rate.val1);
 		return 0;
 	}
-	struct sensor_value temperature_oversampling_rate = { BMP5_OVERSAMPLING_2X, 1 };
+	struct sensor_value temperature_oversampling_rate = { BMP5_OVERSAMPLING_1X, 1 };
 	if (sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_OVERSAMPLING, &temperature_oversampling_rate) != 0) {
 		LOG_ERR("Could not set oversampling rate of %d", pressure_oversampling_rate.val1);
 		return 0;
 	}
 
-	struct sensor_value pressure_odr = { BMP5_ODR_25_HZ, 0 };
+	struct sensor_value pressure_odr = { BMP5_ODR_50_HZ, 0 };
 	if (sensor_attr_set(pressure_sensor_get_device(), SENSOR_CHAN_AMBIENT_TEMP, SENSOR_ATTR_SAMPLING_FREQUENCY, &pressure_odr) != 0) {
 		LOG_ERR("Could not set pressure ODR of %d", pressure_odr.val1);
 		return 0;
